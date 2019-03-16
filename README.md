@@ -37,7 +37,7 @@ lines that exactly match length characters.
 This command counts the frequencies of all letters in the input text or file.
 The only symbols counted are [a-z][A-Z], and case is ignored.
 
-## -sanitize <file>
+## -sanitize \<file\>
 This command reads the input file and for each line removes all characters
 that are not a letter. Uppercase letters are coverted to lowercase. This does
 not overwrite the file, and the output should be redirected to a new file.
