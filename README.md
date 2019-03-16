@@ -8,7 +8,7 @@ routine which removes this executable along with any .txt files in the base
 directory. .txt files within subdirectories will not be touched.
 
 # Usage
-## -caesar <text/file> <offset>
+## -caesar <text/file> \<offset\>
 This command runs a simple Caesar Cipher on the input text. The text can
 be supplied as a string argument or as an input file to read. The offset
 is ADDED to the text to produce the shift. If the shift is known and you
@@ -29,7 +29,7 @@ the (index)'th matching substring within 'text'. (index) can be ommited, and
 in this case it will default to the first match. No output is printed if no
 match is found.
 
-## -len <file> <length>
+## -len \<file\> \<length\>
 This command reads through each line of the input file and only outputs the
 lines that exactly match length characters.
 
