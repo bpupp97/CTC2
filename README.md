@@ -8,11 +8,12 @@ routine which removes this executable along with any .txt files in the base
 directory. .txt files within subdirectories will not be touched.
 
 # Usage
-## -caesar <text/file> \<offset\>
+## -caesar <text/file> (offset)
 This command runs a simple Caesar Cipher on the input text. The text can
 be supplied as a string argument or as an input file to read. The offset
 is ADDED to the text to produce the shift. If the shift is known and you
-wish to decrypt, use a negative offset.
+wish to decrypt, use a negative offset. The offset can be ommited to test
+all 26 possibilites.
 
 ## -pa <text/file> <key/file> (-de)
 This command runs a Polyalphabetic Block Cipher on the input text using the
