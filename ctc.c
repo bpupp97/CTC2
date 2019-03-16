@@ -13,6 +13,7 @@ int wordMatch (char *, char *);
 int wordnMatch (char *, char *, int);
 char * paCipher (char *, char *, int);
 int * letterFreq (char *);
+void coincidence (char *, int);
 
 int main(int argc, char * argv[]) {
     FILE * fd = NULL;
@@ -41,7 +42,6 @@ int main(int argc, char * argv[]) {
 
             /* do this in advance to save additional calls */
             while (getline (&rdLine, &rdLen, fd) != -1) {
-                sanitize (&rdLine);
                 if (argc == 4) {
                     printf ("%s\n", caesar (&rdLine, atoi(argv[3])));
                 } else {
@@ -59,7 +59,6 @@ int main(int argc, char * argv[]) {
             if (rdLine == NULL)
                 goto memerr;
             strcpy (rdLine, argv[2]);
-            sanitize (&rdLine);
             if (argc == 4) {
                 printf ("%s\n", caesar (&rdLine, atoi(argv[3])));
             } else {
@@ -86,10 +85,8 @@ int main(int argc, char * argv[]) {
                 /* interpret arg2 as a file */
 
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
-                    sanitize (&rdLine);
                     printf("%s\n", rdLine);
                     while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
-                        sanitize (&rdLine2);
                         buffer = paCipher (rdLine, rdLine2, j);
                         printf ("%s\n", buffer);
                         free (buffer);
@@ -108,10 +105,8 @@ int main(int argc, char * argv[]) {
                 if (rdLine2 == NULL)
                     goto memerr;
                 strcpy (rdLine2, argv[3]);
-                sanitize (&rdLine2);
 
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
-                    sanitize (&rdLine);
                     buffer = paCipher (rdLine, rdLine2, j);
                     printf ("%s\n", buffer);
                     free (buffer);
@@ -128,10 +123,8 @@ int main(int argc, char * argv[]) {
                     goto memerr;
 
                 strcpy (rdLine, argv[2]);
-                sanitize (&rdLine);
 
                 while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
-                    sanitize (&rdLine2);
                     buffer = paCipher (rdLine, rdLine2, j);
                     printf ("%s\n", buffer);
                     free (buffer);
@@ -148,9 +141,6 @@ int main(int argc, char * argv[]) {
 
                 strcpy (rdLine, argv[2]);
                 strcpy (rdLine2, argv[3]);
-
-                sanitize (&rdLine);
-                sanitize (&rdLine2);
 
                 printf ("%s\n", paCipher (rdLine, rdLine2, j));
             }
@@ -173,9 +163,7 @@ int main(int argc, char * argv[]) {
                 /* interpret arg2 as a file */
 
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
-                    sanitize (&rdLine);
                     while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
-                        sanitize (&rdLine2);
 
                         if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
                             printf ("%s %s %d\n", rdLine, rdLine2, j);
@@ -195,10 +183,8 @@ int main(int argc, char * argv[]) {
                 if (rdLine2 == NULL)
                     goto memerr;
                 strcpy (rdLine2, argv[3]);
-                sanitize (&rdLine2);
 
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
-                    sanitize (&rdLine);
 
                     if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
                         printf ("%s %s %d\n", rdLine, rdLine2, j);
@@ -216,10 +202,8 @@ int main(int argc, char * argv[]) {
                     goto memerr;
 
                 strcpy (rdLine, argv[2]);
-                sanitize (&rdLine);
 
                 while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
-                    sanitize (&rdLine2);
 
                     if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
                         printf ("%s %s %d\n", rdLine, rdLine2, j);
@@ -238,9 +222,6 @@ int main(int argc, char * argv[]) {
                 strcpy (rdLine, argv[2]);
                 strcpy (rdLine2, argv[3]);
 
-                sanitize (&rdLine);
-                sanitize (&rdLine2);
-                
                 if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
                     printf ("%s %s %d\n", rdLine, rdLine2, j);
             }
@@ -261,13 +242,15 @@ int main(int argc, char * argv[]) {
 
         i = atoi (argv[3]);
         while ( getline (&rdLine, &rdLen, fd) != -1 ) {
-            sanitize (&rdLine);
             if (strlen (rdLine) == i)
                 printf ("%s\n", rdLine);
             free (rdLine);
             rdLine = NULL;
         }
     }
+    /*
+    * FREQUENCY ANALYSIS
+    */
     else if (strcmp (argv[1], "-freq") == 0) {
         if (argc != 3)
             goto usage;
@@ -304,6 +287,9 @@ int main(int argc, char * argv[]) {
             }
         } 
     }
+    /*
+    * SANITIZE
+    */
     else if (strcmp (argv[1], "-sanitize") == 0) {
         if (argc != 3)
             goto usage;
@@ -318,6 +304,27 @@ int main(int argc, char * argv[]) {
             printf("%s\n", rdLine);
             free (rdLine);
             rdLine = NULL;
+        }
+    }
+    else if (strcmp (argv[1], "-coincidence") == 0) {
+        if (argc != 4)
+            goto usage;
+
+        if ( (fd = fopen (argv[2], "r")) != NULL) {
+            while ( getline (&rdLine, &rdLen, fd) != -1 ) {
+                coincidence (rdLine, atoi(argv[3]));
+                free (rdLine);
+                rdLine = NULL;
+            }
+        } else {
+            rdLine = malloc (strlen (argv[2]));
+            if (rdLine == NULL)
+                goto memerr;
+            
+            strcpy (rdLine, argv[2]);
+            coincidence (rdLine, atoi(argv[2]));
+            free (rdLine);
+            rdLine == NULL;
         }
     }
     /*
@@ -338,7 +345,8 @@ usage:
             "       ctc -match <text/file> <key/file> (index)\n"
             "       ctc -len <file> <length>\n"
             "       ctc -freq <text/file>\n"
-            "       ctc -sanitize <file>\n");
+            "       ctc -sanitize <file>\n"
+            "       ctc -coincidence <text/file> <length>\n");
     return -1;
 
 memerr:
@@ -475,3 +483,23 @@ int * letterFreq (char * language) {
     return freq;
 }
 
+/* checks the string for repeating patterns, prints out all coincidences
+for the given length */
+void coincidence (char * inputStr, int length) {
+    char * buffer = NULL;
+    int strLen = strlen (inputStr);
+    int i, j;
+
+    i = 0;
+    while (i + length <= strLen) {
+        buffer = inputStr + i;
+        j = i+1;
+        while (j + length <= strLen) {
+            if (strncmp (buffer, inputStr + j, length) == 0)
+                printf ("%.*s %d,%d:%d\n", length, buffer, i, j, j-i);
+
+            j++;
+        }
+        i++;
+    }
+}

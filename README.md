@@ -45,3 +45,8 @@ not overwrite the file, and the output should be redirected to a new file.
 This should be run if the user wants to use the text as a key for a
 polyalphabetic cipher.
 
+## -coincidence <text/file> \<length\>
+This command reads the input file line by line. The lines are scanned to
+determine if there are any repeated patterns of length 'length' found
+within. They are printed in the form:
+    pattern index1,index2:distance
