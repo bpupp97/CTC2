@@ -3,4 +3,4 @@ ctc: ctc.c
 
 .PHONY: clean
 clean:
-	rm ctc ./*.txt
+	rm -f ctc ./*.txt
