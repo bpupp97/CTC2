@@ -11,7 +11,7 @@ char * sanitize (char **);
 char * caesar (char **, int);
 int wordMatch (char *, char *);
 int wordnMatch (char *, char *, int);
-char * paCipher (char *, char *);
+char * paCipher (char *, char *, int);
 int * letterFreq (char *);
 
 int main(int argc, char * argv[]) {
@@ -73,7 +73,11 @@ int main(int argc, char * argv[]) {
     * POLYALPHABETIC CIPHER
     */
     else if (strcmp (argv[1], "-pa") == 0) {
-        if (argc != 4)
+        if (argc == 4)
+            j = 1;
+        else if (argc == 5 && strcmp(argv[4], "-de") == 0)
+            j = -1;
+        else
             goto usage;
 
         if ( (fd = fopen (argv[2], "r")) != NULL) {
@@ -86,7 +90,7 @@ int main(int argc, char * argv[]) {
                     printf("%s\n", rdLine);
                     while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
                         sanitize (&rdLine2);
-                        buffer = paCipher (rdLine, rdLine2);
+                        buffer = paCipher (rdLine, rdLine2, j);
                         printf ("%s\n", buffer);
                         free (buffer);
                         free (rdLine2);
@@ -108,7 +112,7 @@ int main(int argc, char * argv[]) {
 
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
                     sanitize (&rdLine);
-                    buffer = paCipher (rdLine, rdLine2);
+                    buffer = paCipher (rdLine, rdLine2, j);
                     printf ("%s\n", buffer);
                     free (buffer);
                     free (rdLine);
@@ -128,7 +132,7 @@ int main(int argc, char * argv[]) {
 
                 while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
                     sanitize (&rdLine2);
-                    buffer = paCipher (rdLine, rdLine2);
+                    buffer = paCipher (rdLine, rdLine2, j);
                     printf ("%s\n", buffer);
                     free (buffer);
                     free (rdLine2);
@@ -148,9 +152,7 @@ int main(int argc, char * argv[]) {
                 sanitize (&rdLine);
                 sanitize (&rdLine2);
 
-                printf ("%s\n", paCipher (rdLine, rdLine2));
-
-                
+                printf ("%s\n", paCipher (rdLine, rdLine2, j));
             }
         }
     }
@@ -424,7 +426,7 @@ int wordnMatch (char * searchSpace, char * word, int occurance) {
 /* returns a polyaphabetic shift using <key> on <pt>, stored
 in a new string, leaving the original untouched. key must be
 all lowercase letters */
-char * paCipher (char * pt, char * key) {
+char * paCipher (char * pt, char * key, int dir) {
     int idx;
 
     int ptLen = strlen(pt);
@@ -442,12 +444,15 @@ char * paCipher (char * pt, char * key) {
     }
 
     for (idx = 0; idx < ptLen; idx++) {
-        ct[idx] = ((pt[idx] - 'a') + (key[idx % keyLen] - 'a')) % 26 + 'a';
+        ct[idx] = pt[idx] - 'a';                    /* convert to a letter index */
+        ct[idx] += dir * (key[idx % keyLen] - 'a'); /* add or subtract key letter */
+        ct[idx] = ((ct[idx] + 26) % 26) + 'a';      /* normalize mod and make letter*/
     }
 
     return ct;
 }
 
+/* Counts the letter frequencies of the input language, only counts letters */
 int * letterFreq (char * language) {
     int llen = strlen (language);
     int i;
