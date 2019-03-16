@@ -32,7 +32,7 @@ int main(int argc, char * argv[]) {
     /*
     * CAESAR CIPHER
     */
-    if (strcmp (argv[1], "-caesar") == 0) {
+    if (strcmp (argv[1], "-csr") == 0) {
         /* caesar cipher for the given shift */
         if (argc != 3 && argc != 4)
             goto usage;
@@ -45,8 +45,7 @@ int main(int argc, char * argv[]) {
                 if (argc == 4) {
                     printf ("%s\n", caesar (&rdLine, atoi(argv[3])));
                 } else {
-                    printf ("%s\n", rdLine);
-                    for (i = 0; i < 25; i++)
+                    for (i = 0; i < 26; i++)
                         printf ("%s\n", caesar (&rdLine, 1));
                 }
                 free (rdLine);
@@ -62,8 +61,7 @@ int main(int argc, char * argv[]) {
             if (argc == 4) {
                 printf ("%s\n", caesar (&rdLine, atoi(argv[3])));
             } else {
-                printf ("%s\n", rdLine);
-                for (i = 0; i < 25; i++)
+                for (i = 0; i < 26; i++)
                     printf ("%s\n", caesar (&rdLine, 1));
             }
         }
@@ -71,7 +69,7 @@ int main(int argc, char * argv[]) {
     /*
     * POLYALPHABETIC CIPHER
     */
-    else if (strcmp (argv[1], "-pa") == 0) {
+    else if (strcmp (argv[1], "-ply") == 0) {
         if (argc == 4)
             j = 1;
         else if (argc == 5 && strcmp(argv[4], "-de") == 0)
@@ -88,6 +86,10 @@ int main(int argc, char * argv[]) {
                     printf("%s\n", rdLine);
                     while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
                         buffer = paCipher (rdLine, rdLine2, j);
+                        if (buffer == NULL) {
+                            printf ("Key Error\n");
+                            return -1;
+                        }
                         printf ("%s\n", buffer);
                         free (buffer);
                         free (rdLine2);
@@ -108,6 +110,10 @@ int main(int argc, char * argv[]) {
 
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
                     buffer = paCipher (rdLine, rdLine2, j);
+                    if (buffer == NULL) {
+                        printf ("Key Error\n");
+                        return -1;
+                    }
                     printf ("%s\n", buffer);
                     free (buffer);
                     free (rdLine);
@@ -126,6 +132,10 @@ int main(int argc, char * argv[]) {
 
                 while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
                     buffer = paCipher (rdLine, rdLine2, j);
+                    if (buffer == NULL) {
+                        printf ("Key Error\n");
+                        return -1;
+                    }
                     printf ("%s\n", buffer);
                     free (buffer);
                     free (rdLine2);
@@ -142,14 +152,20 @@ int main(int argc, char * argv[]) {
                 strcpy (rdLine, argv[2]);
                 strcpy (rdLine2, argv[3]);
 
-                printf ("%s\n", paCipher (rdLine, rdLine2, j));
+                buffer = paCipher (rdLine, rdLine2, j);
+                if (buffer == NULL) {
+                    printf ("Key Error\n");
+                    return -1;
+                }
+
+                printf ("%s\n", buffer);
             }
         }
     }
     /*
     * MATCHING STRINGS
     */
-    else if (strcmp (argv[1], "-match") == 0) {
+    else if (strcmp (argv[1], "-mch") == 0) {
         if (argc == 4)
             i = 1;
         else if (argc == 5)
@@ -166,7 +182,7 @@ int main(int argc, char * argv[]) {
                     while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
 
                         if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
-                            printf ("%s %s %d\n", rdLine, rdLine2, j);
+                            printf ("%s", rdLine);
 
                         free (rdLine2);
                         rdLine2 = NULL;
@@ -187,7 +203,7 @@ int main(int argc, char * argv[]) {
                 while ( (getline (&rdLine, &rdLen, fd)) != -1 ) {
 
                     if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
-                        printf ("%s %s %d\n", rdLine, rdLine2, j);
+                        printf ("%s", rdLine);
                     
                     free (rdLine);
                     rdLine = NULL;
@@ -206,7 +222,7 @@ int main(int argc, char * argv[]) {
                 while ( (getline (&rdLine2, &rdLen2, fd2)) != -1 ) {
 
                     if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
-                        printf ("%s %s %d\n", rdLine, rdLine2, j);
+                        printf ("%s", rdLine);
                     
                     free (rdLine2);
                     rdLine2 = NULL;
@@ -223,7 +239,7 @@ int main(int argc, char * argv[]) {
                 strcpy (rdLine2, argv[3]);
 
                 if ( (j = wordnMatch (rdLine, rdLine2, i)) != -1 )
-                    printf ("%s %s %d\n", rdLine, rdLine2, j);
+                    printf ("%s", rdLine);
             }
         }
  
@@ -242,8 +258,8 @@ int main(int argc, char * argv[]) {
 
         i = atoi (argv[3]);
         while ( getline (&rdLine, &rdLen, fd) != -1 ) {
-            if (strlen (rdLine) == i)
-                printf ("%s\n", rdLine);
+            if (strlen (rdLine) - 1 == i)
+                printf ("%s", rdLine);
             free (rdLine);
             rdLine = NULL;
         }
@@ -251,7 +267,7 @@ int main(int argc, char * argv[]) {
     /*
     * FREQUENCY ANALYSIS
     */
-    else if (strcmp (argv[1], "-freq") == 0) {
+    else if (strcmp (argv[1], "-frq") == 0) {
         if (argc != 3)
             goto usage;
 
@@ -290,7 +306,7 @@ int main(int argc, char * argv[]) {
     /*
     * SANITIZE
     */
-    else if (strcmp (argv[1], "-sanitize") == 0) {
+    else if (strcmp (argv[1], "-san") == 0) {
         if (argc != 3)
             goto usage;
 
@@ -306,7 +322,7 @@ int main(int argc, char * argv[]) {
             rdLine = NULL;
         }
     }
-    else if (strcmp (argv[1], "-coincidence") == 0) {
+    else if (strcmp (argv[1], "-ccd") == 0) {
         if (argc != 4)
             goto usage;
 
@@ -340,13 +356,13 @@ int main(int argc, char * argv[]) {
     return 0;
 
 usage:
-    printf ("USAGE: ctc -caesar <text/file> <offset>\n"
-            "       ctc -pa <text/file> <key/file>\n"
-            "       ctc -match <text/file> <key/file> (index)\n"
+    printf ("USAGE: ctc -csr <text/file> (offset)\n"
+            "       ctc -ply <text/file> <key/file> (-de)\n"
+            "       ctc -mch <text/file> <key/file> (index)\n"
             "       ctc -len <file> <length>\n"
-            "       ctc -freq <text/file>\n"
-            "       ctc -sanitize <file>\n"
-            "       ctc -coincidence <text/file> <length>\n");
+            "       ctc -frq <text/file>\n"
+            "       ctc -san <file>\n"
+            "       ctc -ccd <text/file> <length>\n");
     return -1;
 
 memerr:
@@ -394,10 +410,13 @@ char * caesar (char ** inputStr, int shift) {
     int length = strlen (*inputStr);
 
     for (idx = 0; idx < length; idx++) {
-        if ((*inputStr)[idx] == 0x00)
+        if ((*inputStr)[idx] == '\n' ||
+            (*inputStr)[idx] == 0x00)
             break;
         (*inputStr)[idx] = ((((*inputStr)[idx] - 'a') + shift) % 26) + 'a';
     }
+
+    (*inputStr)[idx] = 0x00;
 
     return *inputStr;
 }
@@ -405,9 +424,7 @@ char * caesar (char ** inputStr, int shift) {
 /* returns an index for the first occurance of a substring 'word'
 within string 'searchSpace'. for the nth occurance, use
 wordnMatch */
-int wordMatch (char * searchSpace, char * word) {
-    return wordnMatch (searchSpace, word, 1);
-}
+int wordMatch (char * searchSpace, char * word) {return wordnMatch (searchSpace, word, 1);}
 
 int wordnMatch (char * searchSpace, char * word, int occurance) {
     int idx;
@@ -447,15 +464,24 @@ char * paCipher (char * pt, char * key, int dir) {
 
     /* check the key for bad characters */
     for (idx = 0; idx < keyLen; idx++) {
-        if (key[idx] < 'a' || key[idx] > 'z')
+        if (key[idx] < 'a' || key[idx] > 'z') {
+            if (key[idx] == '\n') { /* lines read from file will need trim */
+                keyLen--;
+                break;
+            }
             return NULL;
+        }
     }
 
     for (idx = 0; idx < ptLen; idx++) {
+        if (pt[idx] == 0x00 ||
+            pt[idx] == '\n')
+            break;
         ct[idx] = pt[idx] - 'a';                    /* convert to a letter index */
         ct[idx] += dir * (key[idx % keyLen] - 'a'); /* add or subtract key letter */
         ct[idx] = ((ct[idx] + 26) % 26) + 'a';      /* normalize mod and make letter*/
     }
+    ct[idx] = 0x00;
 
     return ct;
 }
@@ -489,14 +515,20 @@ void coincidence (char * inputStr, int length) {
     char * buffer = NULL;
     int strLen = strlen (inputStr);
     int i, j;
+    int hasLabled = 0;
 
     i = 0;
     while (i + length <= strLen) {
         buffer = inputStr + i;
         j = i+1;
         while (j + length <= strLen) {
-            if (strncmp (buffer, inputStr + j, length) == 0)
-                printf ("%.*s %d,%d:%d\n", length, buffer, i, j, j-i);
+            if (strncmp (buffer, inputStr + j, length) == 0) {
+                if (!hasLabled) {
+                    printf("%s", inputStr);
+                    hasLabled = 1;
+                }
+                printf ("  %.*s %d,%d:%d\n", length, buffer, i, j, j-i);
+            }
 
             j++;
         }
