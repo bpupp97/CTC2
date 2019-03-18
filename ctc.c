@@ -296,6 +296,7 @@ int main(int argc, char * argv[]) {
                 goto memerr;
 
             strcpy (rdLine, argv[2]);
+            freq = letterFreq (rdLine);
             
             for (i = 0; i < 26; i++) {
                 if (freq[i] != 0)
